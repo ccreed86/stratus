@@ -50,7 +50,8 @@ const displayCurrentWeather = (city, weatherData) => {
 
 }
 
-const createForecastCard = (weatherData) => {
+const createForecastCard = (forecastData) => {
+
     const iconUrl = `https://openweathermap.org/img/w/${forecastData.weather[0].icon}.png`;
     const iconDescription = forecastData.weather[0].description || "No description";
     const temperature = forecastData.main.temp;
@@ -82,20 +83,15 @@ const createForecastCard = (weatherData) => {
     cardTitle.textContent = dayjs(forecastData.dt_txt).format("M/D/YYYY");
     weatherIcon.setAttribute("src", iconUrl);
     weatherIcon.setAttribute("alt", iconDescription);
-    temperatureElement.textContent = `Temperature 🌡️: ${tempF} °F`;
-    windElement.textContent = `Wind 🌬️: ${windMph} MPH`;
+    temperatureElement.textContent = `Temperature 🌡️: ${temperature} °F`;
+    windElement.textContent = `Wind 🌬️: ${wind} MPH`;
     humidityElement.textContent =`Humidity 💦: ${humidity} %`;
+    
 
     forecastContainer.append(column);
 
 
-
-
-
-
-
 }
-
 
 const displayForecast = (weatherData) => {
     const startDate = dayjs().add(1, "day").startOf("day").unix();
@@ -110,10 +106,12 @@ const displayForecast = (weatherData) => {
     forecastContainer.innerHTML = "";
     forecastContainer.append(headingColumn);
 
-    for(let index = 0; index <weatherData.length; index++) {
-        if( weatherData[index].dt >= startDate && weatherData[index].dt < endDate) {
-            if(weatherData[index].dt_txt.slice(11,13) === "12") {
 
+    for(let index = 0; index < weatherData.length; index++) {
+        if(weatherData[index].dt >= startDate && weatherData[index].dt < endDate) {
+          
+            if(weatherData[index].dt_txt.slice(11,13) === "12") {
+                
                 createForecastCard(weatherData[index]);
                 
             }
