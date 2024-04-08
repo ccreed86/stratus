@@ -25,7 +25,7 @@ const displayCurrentWeather = (city, weatherData) => {
     const windElement = document.createElement("p");
     const humidityElement = document.createElement("p");
 
-    card.setAttribute("class", "card bg-dark text-white");
+    card.setAttribute("class", "card bg-dark border-primary text-white");
     cardBody.setAttribute("class", "card-body");
     card.append(cardBody);
 
@@ -34,17 +34,92 @@ const displayCurrentWeather = (city, weatherData) => {
     windElement.setAttribute("class", "card-text");
     humidityElement.setAttribute("class", "card-text");
 
+  
+  
     heading.textContent = `${city} (${date})`;
     weatherIcon.setAttribute("src", iconUrl);
     weatherIcon.setAttribute("alt", iconDescription);
     heading.append(weatherIcon);
-    temperatureElement.textContent = `Temperature: ${tempF} °F`;
-    windElement.textContent = `Wind: ${windMph} MPH`;
-    humidityElement.textContent =`Humidity: ${humidity} %`;
+    temperatureElement.textContent = `Temperature 🌡️: ${tempF} °F`;
+    windElement.textContent = `Wind 🌬️: ${windMph} MPH`;
+    humidityElement.textContent =`Humidity 💦: ${humidity} %`;
     cardBody.append(heading, temperatureElement, windElement, humidityElement);
 
     todayContainer.innerHTML = "";
     todayContainer.append(card);
+
+}
+
+const createForecastCard = (weatherData) => {
+    const iconUrl = `https://openweathermap.org/img/w/${forecastData.weather[0].icon}.png`;
+    const iconDescription = forecastData.weather[0].description || "No description";
+    const temperature = forecastData.main.temp;
+    const wind = forecastData.wind.speed;
+    const humidity = forecastData.main.humidity;
+
+    const column = document.createElement("div");
+    const card = document.createElement("div");
+    const cardBody = document.createElement("div");
+    const cardTitle = documtent.createElement("h5");
+    const weatherIcon = document.createElement("img");
+    const temperatureElement = document.createElement("p");
+    const windElement = document.createElement("p");
+    const humidityElement = document.createElement("p");
+
+    column.append(card);
+    card.append(cardBody);
+    cardBody.append(cardTitle, weatherIcon, temperatureElement, windElement, humidityElement);
+    
+    column.setAttribute("class", "col-md");
+    column.classList.add("five-day-card");
+    card.setAttribute("class", "card bg-primary text-white");
+    cardBody.setAttribute("class", "card-body");
+    cardTitle.setAttribute("class", "card-title");
+    temperatureElement.setAttribute("class", "card-text");
+    windElement.setAttribute("class", "card-text");
+    humidityElement.setAttribute("class", "card-text");
+
+    cardTitle.textContent = dayjs(forecastData.dt_txt).format("M/D/YYYY");
+    weatherIcon.setAttribute("src", iconUrl);
+    weatherIcon.setAttribute("alt", iconDescription);
+    temperatureElement.textContent = `Temperature 🌡️: ${tempF} °F`;
+    windElement.textContent = `Wind 🌬️: ${windMph} MPH`;
+    humidityElement.textContent =`Humidity 💦: ${humidity} %`;
+
+    forecastContainer.append(column);
+
+
+
+
+
+
+
+}
+
+
+const displayForecast = (weatherData) => {
+    const startDate = dayjs().add(1, "day").startOf("day").unix();
+    const endDate = dayjs().add(6, "day").startOf("day").unix();
+
+    const headingColumn = document.createElement("div");
+    const heading = document.createElement("h3");
+    headingColumn.setAttribute("class", "col-12");
+    heading.textContent = "5-day Forecast:";
+    headingColumn.append(heading);
+
+    forecastContainer.innerHTML = "";
+    forecastContainer.append(headingColumn);
+
+    for(let index = 0; index <weatherData.length; index++) {
+        if( weatherData[index].dt >= startDate && weatherData[index].dt < endDate) {
+            if(weatherData[index].dt_txt.slice(11,13) === "12") {
+
+                createForecastCard(weatherData[index]);
+                
+            }
+        }
+    }
+
 }
 
 const fetchWeather = (location) => {
@@ -57,8 +132,10 @@ const fetchWeather = (location) => {
    fetch(apiURL).then(function(response){
     return response.json();
    }).then(function(data){
+    console.log(data);
+
     displayCurrentWeather(city, data.list[0])
-    // dispayForecast(data);
+    displayForecast(data);
    }).catch(function(error){
    console.log(error);
    })
